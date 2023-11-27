@@ -19,6 +19,7 @@ let stRouter = require('./routes/students_tests');
 let sectionRouter = require('./routes/section');
 let testResultRouter = require('./routes/test_result');
 let questionRouter = require('./routes/questions');
+let activitiesRouter = require('./routes/activities');
 
 let app = express();
 
@@ -46,6 +47,7 @@ app.use('/api/v1/students_tests', stRouter);
 app.use('/api/v1/sections', sectionRouter);
 app.use('/api/v1/test_result', testResultRouter);
 app.use('/api/v1/questions', questionRouter);
+app.use('/activities', activitiesRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -22,25 +22,31 @@ router.get('/', async function (req, res, next){
 })
 
 router.post('/', async function (req, res, next) {
-    let { account_username, account_password } = req.body;
-    let user = [];
-    await db
-        .one('SELECT account_username, account_password from accounts where account_username = $1', [account_username])
-        .then((data) => {
-            user = data
-        })
-        .catch((error) => {
-            console.log('ERROR:', error)
-        });
-    if (user.account_password === account_password) {
-        res.send({
-            account_username,
-            account_password,
-            token: 'token123'
-        })
-    } else {
-        const error = new Error('Something went wrong, please try again!');
-        return next(error)
+    try {
+        let { account_username, account_password } = req.body;
+        let user = [];
+        await db
+            .one('SELECT account_id, account_username, account_password from accounts where account_username = $1', [account_username])
+            .then((data) => {
+                user = data
+            })
+            .catch((error) => {
+                console.log('ERROR:', error)
+            });
+        if (user.account_password === account_password) {
+            res.send({
+                account_id: user.account_id,
+                account_username,
+                account_password,
+                token: 'token123'
+            })
+        } else {
+            const error = new Error('Something went wrong, please try again!');
+            return next(error)
+        }
+    } catch (e) {
+        console.log(e)
+        next(e)
     }
 });
 

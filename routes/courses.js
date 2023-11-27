@@ -11,11 +11,16 @@ router.get('/', async function (req, res, next) {
     await db
         .any('SELECT * from courses')
         .then((data) => {
-            courses = data
+            data.map(dt => courses.push({
+                key: dt.course_id,
+                text: dt.course_name,
+                value: dt.course_id
+            }))
         })
         .catch((error) => {
-            console.log('ERROR:', error)
+            next(error)
         });
+    console.log(courses)
     res.send(courses);
 });
 

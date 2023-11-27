@@ -73,20 +73,9 @@ router.post('/submit', async function (req, res, next) {
             })
     }
 
-    // answers.map((answer, index) => {
-    //     promises.push(
-    //         db.none('insert into test_results(test_id, student_id, question_id, student_answers, created_at) values ($1, $2, $3, $4, now())', [test_id, student_id, answer.question_id, answer.answer_id])
-    //             .then()
-    //     )
-    // })
-
-    // await Promise.all(promises).then(() => console.log(question_id,student_answers,dt))
-
     await Promise.all(promises).then()
 
     res.status(201).send({message: "^.^"});
-    // res.send({student_answers, correct_answers: dt})
 });
-
 
 module.exports = router;
