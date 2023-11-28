@@ -98,4 +98,38 @@ router.put('/', async function (req, res, next) {
     }
 });
 
+router.post('/student', async function (req, res, next) {
+    try {
+        let {account_username, account_password, student_fullname, student_email, student_gt } = req.body
+        await db.one('select max(account_id) from accounts')
+            .then(async (dt) => {
+                await db.one('insert into accounts(account_id, account_username, account_password, account_role) values ($1, $2, $3, $4) RETURNING account_id', [dt.max + 1, account_username, account_password, 'student'])
+                    .then(async (data) => {
+                        await db.none('insert into students(student_id, account_id, student_fullname, student_email, student_gt, student_birthday) values ($1, $2, $3, $4, $5, now())', [account_username, data.account_id, student_fullname, student_email, student_gt])
+                    })
+                    .finally(() => res.status(200).send({message: "Account created successfully"}))
+            })
+    } catch (e) {
+        console.log(e)
+        next(e)
+    }
+});
+
+router.post('/lecturer', async function (req, res, next) {
+    try {
+        let {account_username, account_password, lecturer_fullname, lecturer_email, lecturer_gt } = req.body
+        await db.one('select max(account_id) from accounts')
+            .then(async (dt) => {
+                await db.one('insert into accounts(account_id, account_username, account_password, account_role) values ($1, $2, $3, $4) RETURNING account_id', [dt.max + 1, account_username, account_password, 'lecturer'])
+                    .then(async (data) => {
+                        await db.none('insert into lecturers(lecturer_id, account_id, lecturer_fullname, lecturer_email, lecturer_gt) values ($1, $2, $3, $4, $5)', [account_username, data.account_id, lecturer_fullname, lecturer_email, lecturer_gt])
+                    })
+                    .finally(() => res.status(200).send({message: "Account created successfully"}))
+            })
+    } catch (e) {
+        console.log(e)
+        next(e)
+    }
+});
+
 module.exports = router;

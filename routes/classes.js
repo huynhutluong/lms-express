@@ -68,6 +68,24 @@ router.get(
 )
 
 router.get(
+    '/query/:q',
+    async function (req, res, next) {
+        const {q} = req.params;
+        let classes = [];
+        await db
+            .any('SELECT * FROM classes a, courses d, lecturers e, categories b where a.course_id = d.course_id and a.lecturer_id = e.lecturer_id and d.category_id = b.category_id and d.course_name like $1', ['%' + q + '%'])
+            .then(data => {
+                classes = data
+            })
+            .catch((error) => {
+                console.log('ERROR:', error)
+            });
+        console.log(classes)
+        res.send(classes)
+    }
+)
+
+router.get(
     '/:id/:num',
     async function (req, res, next) {
         const student_id = req.params.id;
@@ -106,6 +124,7 @@ router.get(
     }
 )
 
+//Sai
 router.get(
     '/q/:key_word',
     async function (req, res, next) {
