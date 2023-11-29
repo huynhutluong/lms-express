@@ -16,7 +16,7 @@ router.get('/', async function (req, res, next) {
 
     if (!today && !student_id) {
         await db
-            .any('SELECT classes.class_id, classes.lecturer_id, classes.class_description, courses.course_name, lecturers.lecturer_fullname, categories.category_name from classes, courses, lecturers, categories where classes.course_id = courses.course_id and classes.lecturer_id = lecturers.lecturer_id and courses.category_id = categories.category_id')
+            .any('SELECT classes.class_id, classes.lecturer_id, classes.class_description, courses.course_name, lecturers.lecturer_fullname, categories.category_name from classes, courses, lecturers, categories where classes.course_id = courses.course_id and classes.lecturer_id = lecturers.lecturer_id and courses.category_id = categories.category_id and active = $1', [true])
             .then((data) => {
                 classes = data
                 res.send(classes);
@@ -141,6 +141,68 @@ router.get(
                 console.log('ERROR:', error)
             });
         res.send(classes)
+    }
+)
+
+router.post(
+    '/',
+    async function (req, res, next) {
+        try {
+            let {course_id, lecturer_id, class_description, class_semester, class_year, class_date, class_start, class_end} = req.body
+
+            await db.any('select count(*) from classes where course_id = $1', [course_id])
+                .then(async (data) => {
+                    await db.none('insert into classes(class_id, course_id, lecturer_id, class_description, class_semester, class_year, class_date, class_start, class_end, created_at) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, now())', [course_id + (data[0].count + 1), course_id, lecturer_id, class_description, class_semester, class_year, class_date, class_start, class_end])
+                })
+                .finally(() => res.send({message: 'Inserted successfully'}))
+        } catch (e) {
+            console.log(e)
+            next(e)
+        }
+    }
+)
+
+router.get(
+    '/lecturer/:id',
+    async function (req, res, next) {
+        try {
+            let {id} = req.params
+            console.log("id", id)
+
+            await db.any('select * from classes where lecturer_id = $1 order by created_at desc limit 3', [id])
+                .then(data => {
+                    console.log(data)
+                    res.send(data)
+                })
+        } catch (e) {
+            console.log(e)
+            next(e)
+        }
+    }
+)
+
+router.get(
+    '/student/:id',
+    async function (req, res, next) {
+        try {
+            const {id} = req.params;
+            console.log(id)
+            // await db
+            //     .any('SELECT * from classes_students cs, classes c, courses a where cs.class_id = c.class_id and c.course_id = a.course_id and cs.student_id = $1',
+            //         [id]
+            //     )
+            //     .then(data => {
+            //         res.send(data)
+            //     })
+            await db
+                .any('SELECT * from classes_students where student_id = $1', [id])
+                .then(data => {
+                    res.send(data)
+                })
+        } catch (e) {
+            console.log(e)
+        }
+
     }
 )
 

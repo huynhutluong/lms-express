@@ -78,4 +78,19 @@ router.post('/submit', async function (req, res, next) {
     res.status(201).send({message: "^.^"});
 });
 
+router.post('/', async function (req, res, next) {
+    try {
+        let {section_id, course_id, test_name, test_password, test_time, easy_questions, medium_questions, hard_questions} = req.body
+        let test_questions = easy_questions + medium_questions + hard_questions
+
+        await db.none('insert into tests(test_id, section_id, course_id, test_name, test_password, test_time, easy_questions, medium_questions, hard_questions, test_questions, created_at) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, now())',
+            [section_id + 't' + Date.now(), section_id, course_id, test_name, test_password, test_time, easy_questions, medium_questions, hard_questions, test_questions])
+
+        res.send({message: 'Added successfully'})
+    } catch (e) {
+        console.log(e)
+        next(e)
+    }
+});
+
 module.exports = router;

@@ -21,6 +21,8 @@ let sectionRouter = require('./routes/section');
 let testResultRouter = require('./routes/test_result');
 let questionRouter = require('./routes/questions');
 let activitiesRouter = require('./routes/activities');
+let scoreRouter = require('./routes/score');
+let scoresRouter = require('./routes/scores');
 
 let app = express();
 
@@ -45,6 +47,8 @@ app.use('/api/v1/class', classRouter);
 app.use('/api/v1/classes', classesRouter);
 app.use('/api/v1/posts', postsRouter);
 app.use('/api/v1/tests', testsRouter);
+app.use('/api/v1/score', scoreRouter);
+app.use('/api/v1/scores', scoresRouter);
 app.use('/api/v1/students_tests', stRouter);
 app.use('/api/v1/sections', sectionRouter);
 app.use('/api/v1/test_result', testResultRouter);

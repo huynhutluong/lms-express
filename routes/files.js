@@ -60,4 +60,19 @@ router.delete('/delete/:file_id', async function (req, res, next) {
     }
 });
 
+router.get('/detail/:file_id', async function (req, res, next) {
+    try {
+        let {file_id} = req.params;
+        let file = {};
+        await db.one('select * from files where file_id = $1', [file_id])
+            .then(res => file = res)
+        await db.any('select * from activities where activity_target = $1', [file_id])
+            .then(dt => file.activities = dt)
+        res.send(file)
+    } catch (e) {
+        console.log(e)
+        next(e)
+    }
+});
+
 module.exports = router;

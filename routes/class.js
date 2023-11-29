@@ -39,15 +39,15 @@ router.get('/:class_id', async function (req, res, next) {
         })
 
     sections.forEach(section => {
-        promises.push(db.any('select * from files where section_id = $1', [section.section_id]).then(files => section.files = files))
+        promises.push(db.any('select * from files where section_id = $1 and active = $2', [section.section_id, true]).then(files => section.files = files))
     })
 
     sections.forEach(section => {
-        promises.push(db.any('select * from posts where section_id = $1', [section.section_id]).then(posts => section.posts = posts))
+        promises.push(db.any('select * from posts where section_id = $1 and active = $2', [section.section_id, true]).then(posts => section.posts = posts))
     })
 
     sections.forEach(section => {
-        promises.push(db.any('select * from tests where section_id = $1', [section.section_id]).then(tests => section.tests = tests))
+        promises.push(db.any('select * from tests where section_id = $1 and active = $2', [section.section_id, true]).then(tests => section.tests = tests))
     })
 
     await Promise.all(promises)

@@ -48,4 +48,27 @@ router.delete('/:post_id', async function (req, res, next) {
     }
 });
 
+router.get('/detail/:post_id', async function (req, res, next) {
+    try {
+        let {post_id} = req.params;
+
+        await db.one('select * from posts where post_id = $1', [post_id])
+            .then(data => res.send(data))
+    } catch (e) {
+        console.log(e)
+        next(e)
+    }
+});
+
+router.put('/', async function (req, res, next) {
+    try {
+        let {post_id, post_title, post_description} = req.body;
+
+        await db.none('update posts set post_title = $2, post_description = $3 where post_id = $1', [post_id, post_title, post_description])
+            .then(() => res.send({message: 'Successfully updated'}))
+    } catch (e) {
+        console.log(e)
+        next(e)
+    }
+});
 module.exports = router;

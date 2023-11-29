@@ -24,4 +24,29 @@ router.get('/', async function (req, res, next) {
     res.send(courses);
 });
 
+router.get(
+    '/student/:id',
+    async function (req, res, next) {
+        try {
+            const {id} = req.params;
+            console.log(id)
+            await db
+                .any('SELECT * from classes_students cs, classes c, courses a where cs.class_id = c.class_id and c.course_id = a.course_id and cs.student_id = $1',
+                    [id]
+                )
+                .then(data => {
+                    res.send(data)
+                })
+            // await db
+            //     .any('SELECT * from classes_students where student_id = $1', [id])
+            //     .then(data => {
+            //         res.send(data)
+            //     })
+        } catch (e) {
+            console.log(e)
+        }
+
+    }
+)
+
 module.exports = router;
